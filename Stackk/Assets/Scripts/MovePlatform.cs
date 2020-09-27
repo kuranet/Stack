@@ -9,8 +9,9 @@ public class MovePlatform : MonoBehaviour
     float speed = 0.1f;
     Vector3 target;
 
-    public static event Action<Vector3,Vector3> platformStops;
+    public event Action<Vector3> platformStops;
 
+    [SerializeField] bool isMoving = true;
 
     void Start()
     {
@@ -21,21 +22,24 @@ public class MovePlatform : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
-        {
+        {   isMoving = false;
             if (platformStops != null)
-                platformStops(gameObject.transform.localScale, gameObject.transform.position);
-            Destroy(this);
+            {
+                platformStops(transform.position);
+                platformStops = null;
+            }
         }
-
-        if (transform.position != target)
-            transform.position = Vector3.MoveTowards(transform.position, target, speed);
-        else
+        if (isMoving)
         {
-            if (target == end)
-                target = start;
+            if (transform.position != target)
+                transform.position = Vector3.MoveTowards(transform.position, target, speed);
             else
-                target = end;
-        }
-        
+            {
+                if (target == end)
+                    target = start;
+                else
+                    target = end;
+            }
+        }    
     }
 }
